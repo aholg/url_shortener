@@ -1,6 +1,11 @@
 plugins {
     id 'application'
+    id 'org.springframework.boot' version '2.7.0'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
+
+group = 'com.aholg'
+version = '0.0.1-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -9,6 +14,8 @@ repositories {
 dependencies {
     testImplementation 'junit:junit:4.13.2'
     implementation 'com.google.guava:guava:30.1.1-jre'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 application {
