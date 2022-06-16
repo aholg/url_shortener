@@ -1,7 +1,7 @@
 package com.aholg.controller;
 
 
-import com.aholg.domain.UrlShortener;
+import com.aholg.repository.UrlRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = UrlShortenerController.class)
-public class UrlShortenerControllerTest {
+class UrlShortenerControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -24,16 +24,16 @@ public class UrlShortenerControllerTest {
     private UrlProperties mockUrlProperties;
 
     @MockBean
-    private UrlShortener mockUrlShortener;
+    private UrlRepository mockUrlRepository;
 
     @Test
-    public void returnsShortenedUrl() throws Exception {
+    void returnsShortenedUrl() throws Exception {
         when(this.mockUrlProperties.host()).thenReturn("test.com");
         when(this.mockUrlProperties.port()).thenReturn(1010);
 
         String url = "www.url.com";
-        String shortUrl = "shortUrl";
-        when(this.mockUrlShortener.shortenedUrl(url)).thenReturn(shortUrl);
+        String urlId = "shortUrl";
+        when(this.mockUrlRepository.save(url)).thenReturn(urlId);
 
         this.mockMvc.perform(
                         get("/")
@@ -43,7 +43,7 @@ public class UrlShortenerControllerTest {
     }
 
     @Test
-    public void returnsBadRequestForMissingUrlParam() throws Exception {
+    void returnsBadRequestForMissingUrlParam() throws Exception {
         this.mockMvc.perform(
                         get("/"))
                 .andExpect(status().isBadRequest());
