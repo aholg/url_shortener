@@ -1,4 +1,4 @@
-package com.aholg;
+package com.aholg.controller;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;

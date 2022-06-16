@@ -12,12 +12,16 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'junit:junit:4.13.2'
     implementation 'com.google.guava:guava:30.1.1-jre'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.mockito:mockito-inline:2.13.0'
 }
 
 application {
     mainClass = 'com.aholg.App'
+}
+
+test {
+    useJUnitPlatform()
 }
