@@ -1,7 +1,7 @@
 package com.aholg.controller;
 
 import com.aholg.repository.UrlRepository;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,8 +17,8 @@ public class UrlShortenerController {
         this.urlRepository = urlRepository;
     }
 
-    @GetMapping("/")
-    public String shortUrl(@RequestParam(value = "url") String url) {
+    @PostMapping("/")
+    public String storeUrl(@RequestParam(value = "url") String url) {
         String shortUrl = urlRepository.save(url);
         return String.format("www.%s:%s/%s", urlProperties.host(), urlProperties.port(), shortUrl);
     }

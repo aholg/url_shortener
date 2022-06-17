@@ -30,7 +30,5 @@ class SimpleUrlRepositoryTest {
         Optional<String> retrievedUrl = urlRepository.retrieve("randomKey");
 
         assertEquals(retrievedUrl, Optional.empty());
-
     }
-
 }

@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,16 +37,16 @@ class UrlShortenerControllerTest {
         when(this.mockUrlRepository.save(url)).thenReturn(urlId);
 
         this.mockMvc.perform(
-                        get("/")
-                                .queryParam("url", url))
+                        post("/")
+                                .param("url", url))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString(String.format("www.test.com:1010/%s", url))));
+                .andExpect(content().string(containsString(String.format("www.test.com:1010/%s", urlId))));
     }
 
     @Test
     void returnsBadRequestForMissingUrlParam() throws Exception {
         this.mockMvc.perform(
-                        get("/"))
+                        post("/"))
                 .andExpect(status().isBadRequest());
     }
 }
