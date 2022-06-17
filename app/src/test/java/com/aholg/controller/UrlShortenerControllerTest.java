@@ -15,8 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = UrlShortenerController.class)
 class UrlShortenerControllerTest {
@@ -32,7 +31,7 @@ class UrlShortenerControllerTest {
 
     @Test
     void returnsShortenedUrl() throws Exception {
-        String url = "www.url.com";
+        String url = "http://www.url.com";
         String urlId = "shortUrl";
 
         when(this.mockUrlProperties.host()).thenReturn("test.com");
@@ -56,14 +55,15 @@ class UrlShortenerControllerTest {
     @Test
     void resolvesShortenedUrl() throws Exception {
         String urlId = "urlId";
-        String url = "www.url.com";
+        String url = "http://www.url.com";
 
         when(this.mockUrlRepository.retrieve(urlId)).thenReturn(Optional.of(url));
 
         this.mockMvc.perform(
                         get("/{urlId}", urlId)
-                ).andExpect(status().isMovedPermanently())
-                .andExpect(content().string(containsString(url)));
+                )
+                .andExpect(status().isMovedPermanently())
+                .andExpect(header().string("Location", url));
     }
 
     @Test
