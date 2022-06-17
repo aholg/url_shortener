@@ -8,7 +8,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -29,17 +32,17 @@ class UrlShortenerControllerTest {
 
     @Test
     void returnsShortenedUrl() throws Exception {
-        when(this.mockUrlProperties.host()).thenReturn("test.com");
-        when(this.mockUrlProperties.port()).thenReturn(1010);
-
         String url = "www.url.com";
         String urlId = "shortUrl";
+
+        when(this.mockUrlProperties.host()).thenReturn("test.com");
+        when(this.mockUrlProperties.port()).thenReturn(1010);
         when(this.mockUrlRepository.save(url)).thenReturn(urlId);
 
         this.mockMvc.perform(
                         post("/")
                                 .param("url", url))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().string(containsString(String.format("www.test.com:1010/%s", urlId))));
     }
 
@@ -48,6 +51,28 @@ class UrlShortenerControllerTest {
         this.mockMvc.perform(
                         post("/"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void resolvesShortenedUrl() throws Exception {
+        String urlId = "urlId";
+        String url = "www.url.com";
+
+        when(this.mockUrlRepository.retrieve(urlId)).thenReturn(Optional.of(url));
+
+        this.mockMvc.perform(
+                        get("/{urlId}", urlId)
+                ).andExpect(status().isMovedPermanently())
+                .andExpect(content().string(containsString(url)));
+    }
+
+    @Test
+    void returnsNotFoundForNonExistingUrlId() throws Exception {
+        when(this.mockUrlRepository.retrieve(any())).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(
+                get("/{urlId}", "urlId")
+        ).andExpect(status().isNotFound());
     }
 }
 

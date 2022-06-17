@@ -1,9 +1,9 @@
 package com.aholg.controller;
 
 import com.aholg.repository.UrlRepository;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UrlShortenerController {
@@ -18,8 +18,16 @@ public class UrlShortenerController {
     }
 
     @PostMapping("/")
+    @ResponseStatus(HttpStatus.CREATED)
     public String storeUrl(@RequestParam(value = "url") String url) {
         String shortUrl = urlRepository.save(url);
         return String.format("www.%s:%s/%s", urlProperties.host(), urlProperties.port(), shortUrl);
+    }
+
+    @GetMapping("/{urlId}")
+    public ResponseEntity<String> getUrl(@PathVariable String urlId) {
+        return urlRepository.retrieve(urlId)
+                .map(url -> ResponseEntity.status(HttpStatus.MOVED_PERMANENTLY).body(url))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
