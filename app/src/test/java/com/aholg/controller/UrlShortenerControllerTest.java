@@ -68,11 +68,22 @@ class UrlShortenerControllerTest {
 
     @Test
     void returnsNotFoundForNonExistingUrlId() throws Exception {
-        when(this.mockUrlRepository.retrieve(any())).thenReturn(Optional.empty());
+        String urlId = "urlId";
+        when(this.mockUrlRepository.retrieve(urlId)).thenReturn(Optional.empty());
+
+        this.mockMvc.perform(
+                get("/{urlId}", urlId)
+        ).andExpect(status().isNotFound());
+    }
+
+    @Test
+    void returnsInternalServerErrorForExceptions() throws Exception {
+        when(this.mockUrlRepository.retrieve(any())).thenThrow(new RuntimeException());
 
         this.mockMvc.perform(
                 get("/{urlId}", "urlId")
-        ).andExpect(status().isNotFound());
+        ).andExpect(status().isInternalServerError())
+                .andExpect(content().string(containsString("Unknown error")));
     }
 }
 

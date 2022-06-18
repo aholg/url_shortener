@@ -11,6 +11,7 @@ public class SimpleUrlRepository implements UrlRepository {
 
     private final HashMap<String, String> urlMap = new HashMap<>();
 
+    //TODO: Handle conflicting keys
     @Override
     public String save(String url) {
         String urlKey = UUID.randomUUID().toString().substring(0, 8);
