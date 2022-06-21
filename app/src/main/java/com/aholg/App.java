@@ -9,7 +9,6 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 public class App {
 
     public static void main(String[] args) {
-        String host = "localhost:8080";
         SpringApplication.run(App.class, args);
     }
 }

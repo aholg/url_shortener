@@ -6,13 +6,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
+import java.util.Optional;
 
-@RestController
+@Controller
 public class UrlShortenerController extends DefaultErrorAttributes {
 
     private final UrlProperties urlProperties;
@@ -27,10 +29,10 @@ public class UrlShortenerController extends DefaultErrorAttributes {
     }
 
     @PostMapping("/")
-    @ResponseStatus(HttpStatus.CREATED)
     public String storeUrl(@RequestParam(value = "url") String url) {
-        String shortUrl = urlRepository.save(url);
-        return String.format("www.%s:%s/%s", urlProperties.host(), urlProperties.port(), shortUrl);
+        String urlId = urlRepository.save(url);
+        String shortUrl = String.format("www.%s:%s/%s", urlProperties.host(), urlProperties.port(), urlId);
+        return String.format("redirect:/shortenUrl?shortUrl=%s", shortUrl);
     }
 
     @GetMapping("/{urlId}")
@@ -42,6 +44,12 @@ public class UrlShortenerController extends DefaultErrorAttributes {
                                 .location(URI.create(url))
                                 .build())
                 .orElseGet(ResponseEntity.notFound()::build);
+    }
+
+    @GetMapping("/shortenUrl")
+    public String getPage(@RequestParam(value = "shortUrl") Optional<String> shortUrl, Model model) {
+        shortUrl.ifPresent(s -> model.addAttribute("shortUrl", s));
+        return "shortenUrl.html";
     }
 
     @ExceptionHandler(RuntimeException.class)

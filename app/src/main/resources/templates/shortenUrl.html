@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://wwww.thymeleaf.org">
+<head>
+    <title>Url Shortener</title>
+</head>
+<body>
+<form th:action="@{/}" method="post">
+    <div>
+        <label for="url">Enter url to shorten:</label>
+        <input type="url" id="url" th:name="url"/>
+    </div>
+    <div>
+        <button type="submit">Submit</button>
+    </div>
+</form>
+<div th:if="${shortUrl}">
+    <p th:text="${shortUrl}"></p>
+</div>
+</body>
+</html>

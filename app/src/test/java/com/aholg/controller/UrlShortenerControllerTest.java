@@ -41,8 +41,8 @@ class UrlShortenerControllerTest {
         this.mockMvc.perform(
                         post("/")
                                 .param("url", url))
-                .andExpect(status().isCreated())
-                .andExpect(content().string(containsString(String.format("www.test.com:1010/%s", urlId))));
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().string("Location", String.format("/shortenUrl?shortUrl=www.test.com:1010/%s", urlId)));
     }
 
     @Test
@@ -84,6 +84,24 @@ class UrlShortenerControllerTest {
                 get("/{urlId}", "urlId")
         ).andExpect(status().isInternalServerError())
                 .andExpect(content().string(containsString("Unknown error")));
+    }
+
+    @Test
+    void returnsPage() throws Exception {
+        this.mockMvc.perform(
+                get("/shortenUrl")
+        ).andExpect(status().isOk())
+                .andExpect(view().name("shortenUrl.html"));
+    }
+
+    @Test
+    void returnsPageWithShortUrl() throws Exception {
+        String shortUrl = "http://www.test.com:1010/shortUrl";
+        this.mockMvc.perform(
+                        get("/shortenUrl?shortUrl={shortUrl}", shortUrl)
+                ).andExpect(status().isOk())
+                .andExpect(view().name("shortenUrl.html"))
+                .andExpect(model().attribute("shortUrl", shortUrl));
     }
 }
 
